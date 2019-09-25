@@ -1,0 +1,23 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarDealer", "CarDealer\CarDealer.csproj", "{DA177C2D-4C2F-4A86-9E51-7F143DFFF8D8}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{8B7FFA96-5767-43C9-9839-ADB7DE825BC0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DA177C2D-4C2F-4A86-9E51-7F143DFFF8D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA177C2D-4C2F-4A86-9E51-7F143DFFF8D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA177C2D-4C2F-4A86-9E51-7F143DFFF8D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA177C2D-4C2F-4A86-9E51-7F143DFFF8D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B7FFA96-5767-43C9-9839-ADB7DE825BC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B7FFA96-5767-43C9-9839-ADB7DE825BC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B7FFA96-5767-43C9-9839-ADB7DE825BC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B7FFA96-5767-43C9-9839-ADB7DE825BC0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
