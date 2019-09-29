@@ -10,10 +10,10 @@ namespace CarDealer.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
-    public class CarController :ControllerBase
+    public class CarController : ControllerBase
     {
         private readonly List<Car> _carRepository;
-        public CarController() 
+        public CarController()
         {
             _carRepository = new List<Car>();
             SeedCars();
@@ -36,15 +36,41 @@ namespace CarDealer.Controllers
                     StockLevel = 1,
                 };
                 _carRepository.Add(newCar);
-            } 
+            }
 
-      
+
         }
 
         [HttpGet("")]
         public IEnumerable<Car> GetCars()
         {
             return _carRepository;
+        }
+
+        [HttpPut("{id:int}")]
+        public ActionResult UpdateCar([FromRoute] int id,
+            [FromBody] Car updatingCarData)
+        {
+            var carIndex = _carRepository.FindIndex(x => x.Id == id);
+            if (carIndex == -1)
+            {
+                return NotFound("Cannot find car with this id");
+            }
+            else
+            {
+                var updatingCar = _carRepository.ElementAt(carIndex);
+                updatingCar.StockLevel = updatingCarData.StockLevel;
+                return Ok(updatingCar);
+            }
+           
+        }
+
+        [HttpGet("search")]
+        public IEnumerable<Car> SearchForCarByMakeAndModel([FromQuery] string searchTerm)
+        {
+            return _carRepository.Where(x => 
+                x.Make.ToUpper().Contains(searchTerm) ||
+                x.Model.ToUpper().Contains(searchTerm));
         }
         /// <summary>
         /// Delete a car with specific id
@@ -67,6 +93,6 @@ namespace CarDealer.Controllers
         public ActionResult<bool> DeleteCar([FromRoute] int id)
         {
             return true;
-        }  
+        }
     }
 }

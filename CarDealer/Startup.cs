@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
@@ -38,6 +39,16 @@ namespace CarDealer
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.AddCors(options =>
+             {
+                 options.AddDefaultPolicy(builder =>
+                 {
+                     builder.WithOrigins(CorsConstants.Origin);
+                 });
+
+
+             }); 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,7 +72,7 @@ namespace CarDealer
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
-
+         
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
