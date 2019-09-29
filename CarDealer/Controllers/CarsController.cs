@@ -10,10 +10,10 @@ namespace CarDealer.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     [ApiController]
-    public class CarController : ControllerBase
+    public class CarsController : ControllerBase
     {
         private readonly List<Car> _carRepository;
-        public CarController()
+        public CarsController()
         {
             _carRepository = new List<Car>();
             SeedCars();
@@ -32,7 +32,13 @@ namespace CarDealer.Controllers
                     Body = "Wagon",
                     Color = "Red",
                     Price = 56999,
-                    ImageUrls = new List<string>(),
+                    ImageUrls = new List<string>(){
+                        "http://bay2car.com/img/2014-AUDI-A4-2-0-TDI-RED-4-DOOR-S-LINE-BLACK-EDITION-DAMAGED-REPAIRED-252538560351/0.jpg",
+                        "http://bay2car.com/img/2014-AUDI-A4-2-0-TDI-RED-4-DOOR-S-LINE-BLACK-EDITION-DAMAGED-REPAIRED-252538560351/1.jpg",
+                        "http://bay2car.com/img/2014-AUDI-A4-2-0-TDI-RED-4-DOOR-S-LINE-BLACK-EDITION-DAMAGED-REPAIRED-252538560351/2.jpg",
+                        "http://bay2car.com/img/2014-AUDI-A4-2-0-TDI-RED-4-DOOR-S-LINE-BLACK-EDITION-DAMAGED-REPAIRED-252538560351/3.jpg",
+                        "http://bay2car.com/img/2014-AUDI-A4-2-0-TDI-RED-4-DOOR-S-LINE-BLACK-EDITION-DAMAGED-REPAIRED-252538560351/4.jpg",
+                    },
                     StockLevel = 1,
                 };
                 _carRepository.Add(newCar);

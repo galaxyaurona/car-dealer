@@ -84,14 +84,18 @@ namespace CarDealer
                     template: "{controller}/{action=Index}/{id?}");
             });
 
-            app.UseSpa(spa =>
+            // return 404 not found for api, only redirect endpoint not goign to API
+            app.MapWhen(x => !x.Request.Path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase), builder =>
             {
-                spa.Options.SourcePath = "ClientApp";
+               builder.UseSpa(spa =>
+               {
+                   spa.Options.SourcePath = "ClientApp";
 
-                if (env.IsDevelopment())
-                {
-                    spa.UseReactDevelopmentServer(npmScript: "start");
-                }
+                   if (env.IsDevelopment())
+                   {
+                       spa.UseReactDevelopmentServer(npmScript: "start");
+                   }
+               });
             });
         }
     }

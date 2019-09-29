@@ -4,3 +4,11 @@
         padding-top: 50px;
     }
 }
+.clickable {
+    cursor: pointer;
+}
+.clickable:hover {
+    border: 1px solid skyblue;
+}
+
+

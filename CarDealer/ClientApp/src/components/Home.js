@@ -1,25 +1,120 @@
 import React, { Component } from 'react';
+import { Alert, ListGroup, ListGroupItem, Row, Col, Glyphicon } from "react-bootstrap";
+
+function FormatMoney(money) {
+  
+  if (money && !isNaN(money))
+    return "$ " + money.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+  else
+    return "$0"
+}
+
+class CustomListItem extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+       parentClass : "list-group-item clickable"
+    }
+  }
+ 
+
+render(){
+  const { car, onRemoveCarClick, onListItemClick } = this.props;
+
+  return (
+    <li className={this.state.parentClass} onClick={onListItemClick}>
+      <h3 style={{ "margin": "5px" }}>
+        {`${car.year} ${car.make} ${car.model} - ${FormatMoney(car.price)}`}
+        <Glyphicon className="pull-right clickable" glyph="remove"
+          onClick={onRemoveCarClick}
+          onMouseEnter={() => this.setState({parentClass:"list-group-item"})}
+          onMouseLeave={() => this.setState({parentClass:"list-group-item clickable"})}
+        />
+      </h3>
+
+    </li>
+  );
+}
+
+}
+
 
 export class Home extends Component {
-  displayName = Home.name
 
+  constructor(props) {
+    super(props)
+    this.state = { cars: [], loadingErrors: [], loading: true }
+    // fetching datas
+    fetch('api/Cars')
+      .then(response => {
+        if (response.status < 300) {
+          response.json().then(cars =>{
+            cars = cars.concat(cars);
+            cars = cars.concat(cars);
+            cars = cars.concat(cars);
+            cars = cars.concat(cars);
+            this.setState({ cars: cars, loadingErrors: [], loading: false })
+          }, error => this.setState({ cars: [], loadingErrors: ['Invalid Json structure'], loading: false }))
+
+        }
+        else {
+          switch (response.status) {
+            case 404:
+              this.setState({ cars: [], loadingErrors: ["API route not found"], loading: false });
+              break;
+            default:
+              this.setState({ cars: [], loadingErrors: response.json(), loading: false });
+          }
+
+        }
+      })
+
+  }
+
+  renderLoadingError(loadingErrors) {
+
+    if (loadingErrors && loadingErrors.length > 0) {
+      return (
+        <div>
+          <Alert bsStyle="danger">
+            {loadingErrors.join("\n")}
+          </Alert>
+        </div>
+      )
+    }
+  }
+  onListItemClick(car) {
+    console.log("car", car)
+  }
+
+  onRemoveCarClick(event, id) {
+    event.stopPropagation();
+    console.log("id",id)
+  }
+  renderCarList(loadingErrors, cars) {
+    if (!loadingErrors || (loadingErrors && loadingErrors.length == 0))
+      return (
+        <ListGroup componentClass="div">
+          {cars.map(car => {
+            return <CustomListItem key={car.id} car={car}
+              onListItemClick={this.onListItemClick.bind(this, car)}
+              onRemoveCarClick={(event) => this.onRemoveCarClick(event, car.id)}
+            >
+            </CustomListItem>
+          })}
+        </ListGroup>
+
+      )
+
+  }
   render() {
+    if (this.state.loading)
+      return <h1>Loading...</h1>
+
     return (
       <div>
-        <h1>Hello, world!</h1>
-        <p>Welcome to your new single-page application, built with:</p>
-        <ul>
-          <li><a href='https://get.asp.net/'>ASP.NET Core</a> and <a href='https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx'>C#</a> for cross-platform server-side code</li>
-          <li><a href='https://facebook.github.io/react/'>React</a> for client-side code</li>
-          <li><a href='http://getbootstrap.com/'>Bootstrap</a> for layout and styling</li>
-        </ul>
-        <p>To help you get started, we've also set up:</p>
-        <ul>
-          <li><strong>Client-side navigation</strong>. For example, click <em>Counter</em> then <em>Back</em> to return here.</li>
-          <li><strong>Development server integration</strong>. In development mode, the development server from <code>create-react-app</code> runs in the background automatically, so your client-side resources are dynamically built on demand and the page refreshes when you modify any file.</li>
-          <li><strong>Efficient production builds</strong>. In production mode, development-time features are disabled, and your <code>dotnet publish</code> configuration produces minified, efficiently bundled JavaScript files.</li>
-        </ul>
-        <p>The <code>ClientApp</code> subdirectory is a standard React application based on the <code>create-react-app</code> template. If you open a command prompt in that directory, you can run <code>npm</code> commands such as <code>npm test</code> or <code>npm install</code>.</p>
+        {this.renderLoadingError(this.state.loadingErrors)}
+        {this.renderCarList(this.state.loadingErrors, this.state.cars)}
       </div>
     );
   }
