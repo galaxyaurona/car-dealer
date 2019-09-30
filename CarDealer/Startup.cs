@@ -1,3 +1,4 @@
+using CarDealer.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
@@ -25,7 +26,13 @@ namespace CarDealer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(options =>
+                options.Filters.Add(typeof(ModelStateValidationFilter))
+            ).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
@@ -40,15 +47,7 @@ namespace CarDealer
                 configuration.RootPath = "ClientApp/build";
             });
 
-            services.AddCors(options =>
-             {
-                 options.AddDefaultPolicy(builder =>
-                 {
-                     builder.WithOrigins(CorsConstants.Origin);
-                 });
-
-
-             }); 
+            CarDealer.Controllers.CarsController.SeedCars();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,7 +71,7 @@ namespace CarDealer
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
-         
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
@@ -87,16 +86,18 @@ namespace CarDealer
             // return 404 not found for api, only redirect endpoint not goign to API
             app.MapWhen(x => !x.Request.Path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase), builder =>
             {
-               builder.UseSpa(spa =>
-               {
-                   spa.Options.SourcePath = "ClientApp";
+                builder.UseSpa(spa =>
+                {
+                    spa.Options.SourcePath = "ClientApp";
 
-                   if (env.IsDevelopment())
-                   {
-                       spa.UseReactDevelopmentServer(npmScript: "start");
-                   }
-               });
+                    if (env.IsDevelopment())
+                    {
+                        spa.UseReactDevelopmentServer(npmScript: "start");
+                    }
+                });
             });
+            // seed cars here
+
         }
     }
 }

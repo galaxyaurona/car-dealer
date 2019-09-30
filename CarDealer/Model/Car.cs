@@ -13,17 +13,21 @@ namespace CarDealer.Model
         [Required]
         public string Make { get; set; }
         [Required]
+        [L]
         public string Model { get; set; }
         [Required]
+        [Range(1900, 2200 , ErrorMessage = "Year must be between 1900 and 2200")]
         public int Year { get; set; }
         [Required]
         public string Body { get; set; }
         [Required]
         public string Color { get; set; }
         [Required]
+        [Range(0, Double.MaxValue, ErrorMessage = "Price must be >= 0")]
         public decimal Price { get; set; }
         public List<string> ImageUrls { get; set; }
         [Required]
+        [Range(0,Int16.MaxValue,ErrorMessage ="Stock level must >= 0")]       
         public int StockLevel { get; set; }
     }
 }

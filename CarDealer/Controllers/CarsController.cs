@@ -1,4 +1,5 @@
-﻿using CarDealer.Model;
+﻿using CarDealer.Middleware;
+using CarDealer.Model;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -12,14 +13,13 @@ namespace CarDealer.Controllers
     [ApiController]
     public class CarsController : ControllerBase
     {
-        private readonly List<Car> _carRepository;
+        private static List<Car> _carRepository = new List<Car>();
         public CarsController()
         {
-            _carRepository = new List<Car>();
-            SeedCars();
+          
         }
 
-        private void SeedCars()
+        public static void SeedCars()
         {
             if (_carRepository.Count == 0)
             {
@@ -43,14 +43,20 @@ namespace CarDealer.Controllers
                 };
                 _carRepository.Add(newCar);
             }
-
-
         }
 
         [HttpGet("")]
         public IEnumerable<Car> GetCars()
         {
             return _carRepository;
+        }
+
+        [HttpPost]
+
+        public ActionResult AddCar([FromBody] Car newCar)
+        {
+            
+            return Ok(newCar);
         }
 
         [HttpPut("{id:int}")]

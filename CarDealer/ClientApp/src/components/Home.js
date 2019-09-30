@@ -217,7 +217,8 @@ export class Home extends Component {
       return <h1>Loading...</h1>
 
     return (
-      <div>
+        <div>
+        
         {this.renderLoadingError(this.state.loadingErrors)}
         {this.renderCarList(this.state.loadingErrors, this.state.cars)}
       </div>
