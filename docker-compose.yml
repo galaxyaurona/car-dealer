@@ -1,8 +1,0 @@
-version: '3.4'
-
-services:
-  cardealer:
-    image: ${DOCKER_REGISTRY-}galaxyaurona/cardealer
-    build:
-      context: .
-      dockerfile: CarDealer/Dockerfile

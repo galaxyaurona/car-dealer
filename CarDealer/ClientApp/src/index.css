@@ -8,7 +8,16 @@
     cursor: pointer;
 }
 .clickable:hover {
-    border: 1px solid skyblue;
+ 
+    box-shadow: 0 0 15px #9ecaed;
 }
 
 
+.car-thumbnail-alt {
+    height: 200px;
+    max-width:400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    object-fit: contain; 
+}
