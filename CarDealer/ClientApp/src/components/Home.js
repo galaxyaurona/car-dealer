@@ -52,7 +52,7 @@ class CustomListItem extends Component {
   updatingStockLevel(event, car, newStockLevel) {
     event.preventDefault();
     event.stopPropagation();
-    console.log("updating", car, newStockLevel)
+
     const data = { ...car, stockLevel: newStockLevel }
     const fetchOptions = {
       method: 'PUT',
@@ -68,8 +68,10 @@ class CustomListItem extends Component {
         if (response.status < 300) {
           response.json().then(car => {
             const { onUpdatingItemSuccess } = this.props;
-            if (onUpdatingItemSuccess && typeof onUpdatingItemSuccess === "function")
+            if (onUpdatingItemSuccess && typeof onUpdatingItemSuccess === "function") {
               onUpdatingItemSuccess(car);
+            }
+
             this.setState({ errors: [], loading: false })
           }, error => this.setState({ errors: ['Invalid Json structure'], loading: false }))
         }
@@ -185,11 +187,10 @@ export class Home extends Component {
       )
     }
   }
-  onListItemClick(car) {
-    console.log("car", car)
-  }
-  onUpdatingCarSuccess(car){
-    console.log("updated",car)
+
+  onUpdatingCarSuccess(updatedCar) {
+    const index = this.state.cars.findIndex(car => car.id == updatedCar.id)
+    this.state.cars[index] = updatedCar;
   }
   onRemoveCarClick(event, id) {
     event.stopPropagation();
@@ -201,7 +202,7 @@ export class Home extends Component {
         <ListGroup componentClass="div">
           {cars.map(car => {
             return <CustomListItem key={car.id} car={car}
-              onListItemClick={this.onListItemClick.bind(this, car)}
+
               onUpdatingItemSuccess={this.onUpdatingCarSuccess.bind(this)}
               onRemoveCarClick={(event) => this.onRemoveCarClick(event, car.id)}
             >
@@ -212,13 +213,72 @@ export class Home extends Component {
       )
 
   }
+  addCar(event, car) {
+    event.preventDefault();
+    event.stopPropagation();
+    console.log("Adding car", car)
+  }
+  renderAddCarError(errors) {
+    if (errors && errors.length > 0) {
+      return (
+        <Alert bsStyle="danger">
+          {errors.join("\n")}
+        </Alert>
+      )
+    }
+  }
+  renderAddCarForm() {
+    let { newCar } = this.state
+    return <Form className="add-form" onSubmit={(event) => this.addCar(event, newCar)} horizontal>
+      <Row>
+        <Col xs={6} md={4}>
+          <FormGroup>
+            <Col componentClass={ControlLabel} sm={2}>
+              Make
+            </Col>
+            <Col sm={10}>
+              <FormControl type="text" placeholder="Toyota" />
+            </Col>
+          </FormGroup>
+        </Col>
+        <Col xs={6} md={4}>
+          <FormGroup>
+            <Col componentClass={ControlLabel} sm={2}>
+              Model
+            </Col>
+            <Col sm={10}>
+              <FormControl type="text" placeholder="Camry" />
+            </Col>
+          </FormGroup>
+        </Col>
+        <Col xs={6} md={4}>
+          <FormGroup>
+            <Col componentClass={ControlLabel} sm={2}>
+              Body
+            </Col>
+            <Col sm={10}>
+              <FormControl type="text" placeholder="Sedan" />
+            </Col>
+          </FormGroup>
+        </Col>
+      </Row>
+      <Row>
+        {this.renderAddCarError(["sample error"])}
+      </Row>
+      <Row>
+        <Button bsStyle="primary"
+          type="submit" 
+          className="pull-right">Add car</Button>
+      </Row>
+    </Form>
+  }
   render() {
     if (this.state.loading)
       return <h1>Loading...</h1>
 
     return (
-        <div>
-        
+      <div>
+        {this.renderAddCarForm()}
         {this.renderLoadingError(this.state.loadingErrors)}
         {this.renderCarList(this.state.loadingErrors, this.state.cars)}
       </div>

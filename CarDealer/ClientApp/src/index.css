@@ -21,3 +21,11 @@
     justify-content: center;
     object-fit: contain; 
 }
+.add-form{
+    border: 1px solid black;
+    padding :5px;
+}
+
+.add-form > .row {
+    margin:
+}

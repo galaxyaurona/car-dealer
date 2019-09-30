@@ -16,21 +16,22 @@ namespace CarDealer.Middleware
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            // You can access it via context.ModelState
+            // Check if model binding is valid
             if (!context.ModelState.IsValid)
             {
+                // filter all the attributes with errors
                 var errorLists = context.ModelState.Select(x => x.Value.Errors)
                            .Where(y => y.Count > 0)
-    
                            .ToList();
-            
+                // flatten, then aggregate them to single list of error
                 var errors = errorLists.Aggregate(new List<string>(),(acc, errorList) =>
                 {
                     // map errors to its errorMessage
                     return acc.Concat(errorList.Select(x => x.ErrorMessage)).ToList();
                 });
+                //return in
                 var result = new UnprocessableEntityObjectResult(new { errors });
-               
+               // return 422 immediately
                 context.Result = result;
                
             }
