@@ -5,7 +5,7 @@ import { CustomListItem } from "./CustomListItem"
 import { AddCarForm } from "./AddCarForm"
 
 export class Home extends Component {
-
+  displayName = Home.name
   constructor(props) {
     super(props)
     this.state = { cars: [], loadingErrors: [], loading: true }
@@ -32,18 +32,20 @@ export class Home extends Component {
   }
 
   onUpdatingCarSuccess(updatedCar) {
-    // id i
+    // find update item by id
     const updatedCarIndex = this.state.cars.findIndex(car => car.id == updatedCar.id)
     const cars = [...this.state.cars]
+    // perform update
     cars[updatedCarIndex] = updatedCar;
     this.setState({ cars })
   }
   onRemovingCarSuccess(id) {
-    const cars = this.state.cars.filter(car => car.id == id)
+    // filter by id
+    const cars = this.state.cars.filter(car => car.id != id)
     this.setState({ cars })
   }
-  renderCarList(loadingErrors, cars) {
-    if (!loadingErrors || (loadingErrors && loadingErrors.length == 0))
+  renderCarList(errors, cars) {
+    if (!errors || (errors && errors.length == 0))
       return (
         <ListGroup componentClass="div">
           {cars.map(car => {
@@ -58,12 +60,13 @@ export class Home extends Component {
   }
   onAddingCarSuccess(car) {
     const { cars } = this.state
+    // adding car to the front
     cars.unshift(car);
-
     this.setState({ cars })
   }
   render() {
     const { loading, loadingErrors, cars } = this.state;
+    // display loading when fetching data
     if (loading)
       return <h1>Loading...</h1>
 

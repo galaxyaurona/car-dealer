@@ -5,26 +5,31 @@ import {
     Button
 } from "react-bootstrap";
 import { ErrorsAlert } from "./ErrorsAlert"
+import { ERROR_API_ROUTE_NOT_FOUND, ERROR_RESPONSE_INVALID_JSON } from '../utils';
+// default state of form
+const defaultState = {
+    make: "",
+    model: "",
+    body: "",
+    year: 0,
+    color: "",
+    price: 0,
+    stockLevel: 0,
+    errors: [],
+    imageUrls: [],
+    loading:false
+}
+
 export class AddCarForm extends Component {
+    
     constructor(props) {
         super(props);
-        this.state = {
-            make: "",
-            model: "",
-            body: "",
-            year: 0,
-            color: "",
-            price: 0,
-            stockLevel: 0,
-            errors: [],
-            imageUrls: [],
-            loading:false
-        }
+        this.state = {...defaultState}
     }
     addCar(event, car) {
         event.preventDefault();
         event.stopPropagation();
-        // at this point it should pass all the validations
+        // at this point it should pass all the form validations
         this.setState({ errors: [], loading: true });
         
         const fetchOptions = {
@@ -38,7 +43,7 @@ export class AddCarForm extends Component {
             .then(response => {
                 const { status } = response;
                 if (status == 404) {
-                    this.setState({ errors: ["API route not found"], loading: false });
+                    this.setState({ errors: [ERROR_API_ROUTE_NOT_FOUND], loading: false });
                 } else {
                     // try parsing response body as json
                     response.json().then(data => {
@@ -47,19 +52,20 @@ export class AddCarForm extends Component {
                             if (onAddingCarSuccess && typeof onAddingCarSuccess === "function") {
                                 onAddingCarSuccess(data);
                             }
-                            this.setState({ errors: [], loading: false })
+                            // clear form and return to initial state
+                            this.setState({...defaultState})
                         } else {
                             this.setState({ errors: data, loading: false })
                         }
-                    }, _ => this.setState({ errors: ['Invalid Json structure'], loading: false }))
+                    }, _ => this.setState({ errors: [ERROR_RESPONSE_INVALID_JSON], loading: false }))
                 }
             })
     }
 
     render() {
-        const { make, model, body, year, color, price, stockLevel, loading, errors } = this.state;
+        const { make, model, body, year, color, price, stockLevel, loading, errors, imageUrls } = this.state;
         // repackage, only get the car's attribute to add
-        const car = { make, model, body, year, color, price, stockLevel }
+        const car = { make, model, body, year, color, price, stockLevel, imageUrls }
         return (
             <Form className="add-form" onSubmit={(event) => this.addCar(event, car)} horizontal>
                 <Row>
@@ -162,6 +168,20 @@ export class AddCarForm extends Component {
                                     min="0"
                                     value={stockLevel}
                                     onChange={event => this.setState({ stockLevel: event.target.value })}
+                                />
+                            </Col>
+                        </FormGroup>
+                    </Col>
+                    <Col xs={6} md={8}>
+                        <FormGroup>
+                            <Col componentClass={ControlLabel} sm={1}>
+                                Image urls
+                            </Col>
+                            <Col sm={11}>
+                                <FormControl type="url" placeholder="url to your car image"
+
+                                    value={imageUrls[0]}
+                                    onChange={event => this.setState({ imageUrls: [event.target.value] })}
                                 />
                             </Col>
                         </FormGroup>

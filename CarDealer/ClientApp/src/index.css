@@ -4,29 +4,38 @@
         padding-top: 50px;
     }
 }
+
 .clickable {
     cursor: pointer;
 }
+
 .clickable:hover {
- 
     box-shadow: 0 0 15px #9ecaed;
 }
 
-
 .car-thumbnail-alt {
     height: 200px;
-    max-width:400px;
+    max-width: 400px;
     display: flex;
     align-items: center;
     justify-content: center;
-    object-fit: contain; 
+    object-fit: contain;
 }
-.add-form{
+
+.add-form {
     border: 1px solid black;
-    padding :5px;
+    padding: 5px;
     margin: 15px 0px;
 }
 
-.add-form > .row {
+.search-form {
+    margin: 5px 0px;
+}
+
+.glyphicon-remove.disabled {
+    color: gainsboro
+}
+
+.add-form>.row {
     margin: 5px;
 }

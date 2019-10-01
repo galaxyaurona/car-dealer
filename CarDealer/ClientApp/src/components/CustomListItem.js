@@ -1,20 +1,18 @@
 import React, { Component } from 'react';
-import {ErrorsAlert} from "./ErrorsAlert";
+import { ErrorsAlert } from "./ErrorsAlert";
 import {
-     Row, Col, Glyphicon,
-    Form, FormGroup, FormControl, ControlLabel,
-    Image, Button
-  } from "react-bootstrap";
- 
-function FormatMoney(money) {
-    if (money && !isNaN(money))
-        return "$ " + money.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-    else
-        return "$0"
-}
+  Row, Col, Glyphicon,
+  Form, FormGroup, FormControl, ControlLabel,
+  Image, Button
+} from "react-bootstrap";
+import { ERROR_RESPONSE_INVALID_JSON, FormatMoney,
+   ERROR_API_ROUTE_NOT_FOUND } from '../utils';
 
-  
+
+
+
 export class CustomListItem extends Component {
+  displayName = CustomListItem.name
   constructor(props) {
     super(props)
     this.state = {
@@ -31,31 +29,19 @@ export class CustomListItem extends Component {
         </div>
       );
     } else {
-      return <Image alt="Link to image is broken" src={urls[0]} alt="171x180" max-height="200px" responsive />
+      return <Image alt="Link to image is broken" src={urls[0]} max-height="200px" responsive />
     }
   }
-  /*onShowMoreImagesClick(urls) {
-    console.log(urls)
-  }
-  renderShowMoreImages(urls) {
-    if (urls && urls.length > 1) {
-      // photo not available stock
-      return (
-        <a onClick={() => this.onShowMoreImagesClick(urls)}>
-          Show more images
-        </a>
-      );
-    }
-  }*/
+
 
   updatingStockLevel(event, car, newStockLevel) {
     event.preventDefault();
     event.stopPropagation();
- 
+
     if (this.state.loading) return;
     const data = { ...car, stockLevel: newStockLevel }
     const fetchOptions = {
-      method: 'PUT',
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -64,27 +50,27 @@ export class CustomListItem extends Component {
     this.setState({ errors: [], loading: true });
     fetch(`/API/cars/${car.id}`, fetchOptions)
       .then(response => {
-            const { status } = response;
-            if (status == 404) {
-              this.setState({ errors: ["API route not found"], loading: false });
+        const { status } = response;
+        if (status == 404) {
+          this.setState({ errors: [ERROR_API_ROUTE_NOT_FOUND], loading: false });
+        } else {
+          // try parsing response body as json
+          response.json().then(data => {
+            if (status < 300) {
+              const { onUpdatingItemSuccess } = this.props;
+              if (onUpdatingItemSuccess && typeof onUpdatingItemSuccess === "function") {
+                onUpdatingItemSuccess(data);
+              }
+              this.setState({ errors: [], loading: false })
             } else {
-              // try parsing response body as json
-              response.json().then(data => {
-                if (status < 300) {
-                    const { onUpdatingItemSuccess } = this.props;
-                    if (onUpdatingItemSuccess && typeof onUpdatingItemSuccess === "function") {
-                      onUpdatingItemSuccess(data);
-                    }
-                  this.setState({ errors:[], loading: false })
-                } else {
-                  this.setState({ errors: data, loading: false })
-                }
-              }, _ => this.setState({ errors: ['Invalid Json structure'], loading: false }))
+              this.setState({ errors: data, loading: false })
             }
+          }, _ => this.setState({ errors: [ERROR_RESPONSE_INVALID_JSON], loading: false }))
+        }
       })
   }
 
-  
+
   onRemovingCarClick(event, id) {
     event.preventDefault();
     event.stopPropagation();
@@ -93,37 +79,37 @@ export class CustomListItem extends Component {
       method: 'DELETE',
     }
     this.setState({ errors: [], loading: true })
-    fetch(`/API/cars/${id}`,fetchOptions)
+    fetch(`/API/cars/${id}`, fetchOptions)
       .then(response => {
-            const { status } = response;
-            if (status == 404) {
-              this.setState({ errors: ["API route not found"], loading: false });
+        const { status } = response;
+        if (status == 404) {
+          this.setState({ errors: [ERROR_API_ROUTE_NOT_FOUND], loading: false });
+        } else {
+          // try parsing response body as json
+          response.json().then(data => {
+            if (status < 300) {
+              this.setState({ errors: [], loading: false })
+              const { onRemovingCarSuccess } = this.props;
+              if (onRemovingCarSuccess && typeof onRemovingCarSuccess === "function") {
+                onRemovingCarSuccess(id);
+              }
+
             } else {
-              // try parsing response body as json
-              response.json().then(data => {
-                if (status < 300) {
-                    const { onRemovingCarSuccess } = this.props;
-                    if (onRemovingCarSuccess && typeof onRemovingCarSuccess === "function") {
-                        onRemovingCarSuccess(data);
-                    }
-                  this.setState({ errors:[], loading: false })
-                } else {
-                  this.setState({ errors: data, loading: false })
-                }
-              }, _ => this.setState({ errors: ['Invalid Json structure'], loading: false }))
+              this.setState({ errors: data, loading: false })
             }
+          }, _ => this.setState({ errors: [ERROR_RESPONSE_INVALID_JSON], loading: false }))
+        }
       })
   }
 
   render() {
-    const { car } = this.props;
+    const { car, disableControl } = this.props;
     const { newStockLevel, errors, loading } = this.state;
     return (
       <li className="list-group-item" style={{ "margin": "5px" }} >
         <h3 style={{ "margin": "5px" }}>
           {`${car.year} ${car.make} ${car.model} `}
-          <Glyphicon className={"pull-right " + (loading ? "disabled" : "clickable")} glyph="remove"
-            disabled={loading}
+          <Glyphicon className={"pull-right " + (loading || disableControl ? "disabled" : "clickable")} glyph="remove"
             onClick={event => this.onRemovingCarClick(event, car.id)}
           />
         </h3>
@@ -136,21 +122,22 @@ export class CustomListItem extends Component {
             <h5><b>Body:</b> {car.body}</h5>
             <h5><b>Color:</b> {car.color}</h5>
             <h5><b>Stock level:</b> {car.stockLevel}</h5>
-            <Form onSubmit={(event) => this.updatingStockLevel(event, car, newStockLevel)}  inline>
-           
-                <FormGroup controlId="formInlineName">
-                  <ControlLabel>New stock level:</ControlLabel>{' '}
-                  <FormControl type="number" placeholder="10" value={newStockLevel}
-                    required
-                    min="0"
-                    step="1"
-                    onChange={(event) => this.setState({ newStockLevel: event.target.value })}
-                  />
-                </FormGroup>{' '}
-                <Button type="submit" bsStyle="primary"
-                  disabled={loading}
-                >Update</Button>
-                <ErrorsAlert errors={errors}></ErrorsAlert>
+            <Form onSubmit={(event) => this.updatingStockLevel(event, car, newStockLevel)} inline>
+
+              <FormGroup controlId="formInlineName">
+                <ControlLabel>New stock level:</ControlLabel>{' '}
+                <FormControl type="number" placeholder="10" value={newStockLevel}
+                  required
+                  min="0"
+                  step="1"
+                  onChange={(event) => this.setState({ newStockLevel: event.target.value })}
+                />
+              </FormGroup>{' '}
+              <Button type="submit" 
+                bsStyle="primary"
+                disabled={loading || disableControl}
+              >Update</Button>
+              <ErrorsAlert errors={errors}></ErrorsAlert>
             </Form>
           </Col>
         </Row>

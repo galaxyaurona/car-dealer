@@ -35,7 +35,7 @@ namespace CarDealer
             });
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+                c.SwaggerDoc("v1", new Info { Title = "Car Dealer API", Version = "v1" });
                 // Set the comments path for the Swagger JSON and UI.
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -46,7 +46,7 @@ namespace CarDealer
             {
                 configuration.RootPath = "ClientApp/build";
             });
-
+            // seed cars here
             CarDealer.Controllers.CarsController.SeedCars();
         }
 
@@ -69,7 +69,7 @@ namespace CarDealer
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Car Dealer API V1");
             });
 
             app.UseHttpsRedirection();
@@ -96,7 +96,7 @@ namespace CarDealer
                     }
                 });
             });
-            // seed cars here
+            
 
         }
     }

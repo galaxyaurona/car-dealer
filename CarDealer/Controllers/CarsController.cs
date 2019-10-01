@@ -14,11 +14,9 @@ namespace CarDealer.Controllers
     public class CarsController : ControllerBase
     {
         private static List<Car> _carRepository = new List<Car>();
-        public CarsController()
-        {
-          
-        }
-
+        /// <summary>
+        /// Helper function to seed a sample car in repogitory
+        /// </summary>
         public static void SeedCars()
         {
             if (_carRepository.Count == 0)
@@ -44,23 +42,82 @@ namespace CarDealer.Controllers
                 _carRepository.Add(newCar);
             }
         }
-
+        /// <summary>
+        ///  Get all cars in the car repository
+        /// </summary>
+        /// <remarks> 
+        /// Sample request
+        /// 
+        ///         GET /Cars
+        ///         
+        /// </remarks>
+        /// 
+        /// <returns>Entire list of cars in the car repository</returns>
+        /// <response code="200">
+        ///     Return 200 if no exception occured
+        /// </response>
+        [ProducesResponseType(typeof(List<Car>), 200)]
         [HttpGet("")]
         public IEnumerable<Car> GetCars()
         {
             return _carRepository;
         }
-
+        /// <summary>
+        ///  Add new car into the car repository
+        /// </summary>
+        /// <remarks> 
+        /// Sample request
+        /// 
+        ///         POST /Cars
+        ///         
+        /// </remarks>
+        /// 
+        /// <returns>Entire list of cars in the car repository</returns>
+        /// <response code="200">
+        ///     Return new car if succesfully add car to car repository
+        /// </response>
+        /// <response code="422">
+        ///     Return validation error messages if car fails model validation
+        ///     (via ModelStateValidationFilter)
+        /// </response>
         [HttpPost]
-
+        [ProducesResponseType(typeof(Car), 200)]
+        [ProducesResponseType(typeof(List<string>), 422)]
         public ActionResult AddCar([FromBody] Car newCar)
         {
+            // generate new id for the car
             newCar.Id = Guid.NewGuid();
+            // save to database
             _carRepository.Add(newCar);
             return Ok(newCar);
         }
-
-        [HttpPut("{id:Guid}")]
+        /// <summary>
+        ///  Partially update car, currenly support updating stock level
+        /// </summary>
+        /// <remarks> 
+        /// Sample request
+        /// 
+        ///         PATCH /Cars/0793c770-8dfb-4436-b3e6-d7dbb0b08c4e
+        ///         
+        /// </remarks>
+        /// 
+        /// <returns>Update car object</returns>
+        /// <response code="404">
+        ///     return error message with single message when cannot
+        ///   find car with this id in the repository
+        ///    
+        /// </response>
+        /// <response code="422">
+        ///     Return validation error messages if car fails model validation
+        ///     (via ModelStateValidationFilter)
+        /// </response>
+        /// <response code="200">
+        ///     Return updated car if succesfully update 
+        /// </response>
+        [HttpPatch("{id:Guid}")]
+        [ProducesResponseType(typeof(Car), 200)]
+        [ProducesResponseType(typeof(List<string>), 422)]
+        [ProducesResponseType(typeof(List<string>), 404)]
         public ActionResult UpdateCar([FromRoute] Guid id,
             [FromBody] Car updatingCarData)
         {
@@ -70,7 +127,7 @@ namespace CarDealer.Controllers
                 var errors = new List<string>(){
                     "Cannot find car with this id"
                 };
-                return NotFound(new {errors});
+                return NotFound(new { errors });
             }
             else
             {
@@ -78,15 +135,39 @@ namespace CarDealer.Controllers
                 updatingCar.StockLevel = updatingCarData.StockLevel;
                 return Ok(updatingCar);
             }
-           
-        }
 
+        }
+        /// <summary>
+        ///  Search for car with make or model contain search term (case insensitive
+        /// </summary>
+        /// <remarks> 
+        /// Sample request
+        /// 
+        ///         GET /Cars/search?searchTerm=a4
+        ///         
+        /// </remarks>
+        /// <param name="searchTerm">search term</param>
+        /// <returns>List of items whose make and model contains search term  </returns>
+        /// <response code="422">
+        ///     When search term is null , empty or contains only white space    
+        /// </response>
+        /// <response code="200">
+        ///     Return 200 if no exception occured
+        /// </response>
         [HttpGet("search")]
-        public IEnumerable<Car> SearchForCarByMakeAndModel([FromQuery] string searchTerm)
+        [ProducesResponseType(typeof(List<Car>),200)]
+        [ProducesResponseType(typeof(List<string>),422)]
+        public ActionResult SearchForCarByMakeAndModel([FromQuery] string searchTerm)
         {
-            return _carRepository.Where(x => 
-                x.Make.ToUpper().Contains(searchTerm) ||
-                x.Model.ToUpper().Contains(searchTerm));
+            if (String.IsNullOrWhiteSpace(searchTerm))
+            {
+                var errors = new[] { "Search term cannot be empty or contains only whitespace" };
+                return UnprocessableEntity(new { errors });
+            }
+
+            return Ok(_carRepository.Where(x =>
+                x.Make.ToUpper().Contains(searchTerm.ToUpper()) ||
+                x.Model.ToUpper().Contains(searchTerm.ToUpper())));
         }
         /// <summary>
         /// Delete a car with specific id
@@ -94,7 +175,7 @@ namespace CarDealer.Controllers
         /// <remarks> 
         /// Sample request
         /// 
-        ///         DELETE /Car/1
+        ///         DELETE /Cars/0793c770-8dfb-4436-b3e6-d7dbb0b08c4e
         ///         
         /// </remarks>
         /// <param name="id">Id of the car to be deleted</param>
@@ -102,10 +183,8 @@ namespace CarDealer.Controllers
         /// <response code="200">
         ///     Return 200 if item has been succesfully deleted
         /// </response>
-
         [HttpDelete("{id:Guid}")]
-
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(bool), 200)]
         public ActionResult<bool> DeleteCar([FromRoute] Guid id)
         {
             _carRepository = _carRepository.Where(x => x.Id != id).ToList();
