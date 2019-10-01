@@ -25,7 +25,8 @@ export class AddCarForm extends Component {
         event.preventDefault();
         event.stopPropagation();
         // at this point it should pass all the validations
-        console.log("Adding car", car)
+        this.setState({ errors: [], loading: true });
+        
         const fetchOptions = {
             method: 'POST',
             headers: {
@@ -42,9 +43,9 @@ export class AddCarForm extends Component {
                     // try parsing response body as json
                     response.json().then(data => {
                         if (status < 300) {
-                            const { onCarAdded } = this.props;
-                            if (onCarAdded && typeof onCarAdded === "function") {
-                                onCarAdded(data);
+                            const { onAddingCarSuccess } = this.props;
+                            if (onAddingCarSuccess && typeof onAddingCarSuccess === "function") {
+                                onAddingCarSuccess(data);
                             }
                             this.setState({ errors: [], loading: false })
                         } else {

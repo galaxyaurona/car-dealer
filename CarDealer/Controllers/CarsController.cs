@@ -103,11 +103,12 @@ namespace CarDealer.Controllers
         ///     Return 200 if item has been succesfully deleted
         /// </response>
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:Guid}")]
 
         [ProducesResponseType(200)]
-        public ActionResult<bool> DeleteCar([FromRoute] int id)
+        public ActionResult<bool> DeleteCar([FromRoute] Guid id)
         {
+            _carRepository = _carRepository.Where(x => x.Id != id).ToList();
             return true;
         }
     }

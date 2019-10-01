@@ -27,7 +27,6 @@ export class Home extends Component {
             }
           }, _ => this.setState({ cars: [], loadingErrors: ['Invalid Json structure'], loading: false }))
         }
-
       })
 
   }
@@ -39,9 +38,9 @@ export class Home extends Component {
     cars[updatedCarIndex] = updatedCar;
     this.setState({ cars })
   }
-  onRemoveCarClick(event, id) {
-    event.stopPropagation();
-    console.log("id", id)
+  onRemovingCarSuccess(id) {
+    const cars = this.state.cars.filter(car => car.id == id)
+    this.setState({ cars })
   }
   renderCarList(loadingErrors, cars) {
     if (!loadingErrors || (loadingErrors && loadingErrors.length == 0))
@@ -50,18 +49,18 @@ export class Home extends Component {
           {cars.map(car => {
             return <CustomListItem key={car.id} car={car}
               onUpdatingItemSuccess={this.onUpdatingCarSuccess.bind(this)}
-              onRemoveCarClick={(event) => this.onRemoveCarClick(event, car.id)}
+              onRemovingCarSuccess={this.onRemovingCarSuccess.bind(this)}
             >
             </CustomListItem>
           })}
         </ListGroup>
       )
   }
-  onCarAdded(car){
-    const {cars} = this.state
+  onAddingCarSuccess(car) {
+    const { cars } = this.state
     cars.unshift(car);
-    console.log("setting new cars", cars);
-    this.setState({cars})
+
+    this.setState({ cars })
   }
   render() {
     const { loading, loadingErrors, cars } = this.state;
@@ -70,7 +69,7 @@ export class Home extends Component {
 
     return (
       <div>
-        <AddCarForm onCarAdded={this.onCarAdded.bind(this)}></AddCarForm>
+        <AddCarForm onAddingCarSuccess={this.onAddingCarSuccess.bind(this)}></AddCarForm>
         <ErrorsAlert errors={loadingErrors}></ErrorsAlert>
         {this.renderCarList(loadingErrors, cars)}
       </div>

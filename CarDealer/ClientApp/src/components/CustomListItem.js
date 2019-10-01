@@ -34,7 +34,7 @@ export class CustomListItem extends Component {
       return <Image alt="Link to image is broken" src={urls[0]} alt="171x180" max-height="200px" responsive />
     }
   }
-  onShowMoreImagesClick(urls) {
+  /*onShowMoreImagesClick(urls) {
     console.log(urls)
   }
   renderShowMoreImages(urls) {
@@ -46,12 +46,13 @@ export class CustomListItem extends Component {
         </a>
       );
     }
-  }
+  }*/
 
   updatingStockLevel(event, car, newStockLevel) {
     event.preventDefault();
     event.stopPropagation();
-
+ 
+    if (this.state.loading) return;
     const data = { ...car, stockLevel: newStockLevel }
     const fetchOptions = {
       method: 'PUT',
@@ -83,15 +84,47 @@ export class CustomListItem extends Component {
       })
   }
 
+  
+  onRemovingCarClick(event, id) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (this.state.loading) return;
+    const fetchOptions = {
+      method: 'DELETE',
+    }
+    this.setState({ errors: [], loading: true })
+    fetch(`/API/cars/${id}`,fetchOptions)
+      .then(response => {
+            const { status } = response;
+            if (status == 404) {
+              this.setState({ errors: ["API route not found"], loading: false });
+            } else {
+              // try parsing response body as json
+              response.json().then(data => {
+                if (status < 300) {
+                    const { onRemovingCarSuccess } = this.props;
+                    if (onRemovingCarSuccess && typeof onRemovingCarSuccess === "function") {
+                        onRemovingCarSuccess(data);
+                    }
+                  this.setState({ errors:[], loading: false })
+                } else {
+                  this.setState({ errors: data, loading: false })
+                }
+              }, _ => this.setState({ errors: ['Invalid Json structure'], loading: false }))
+            }
+      })
+  }
+
   render() {
-    const { car, onRemoveCarClick } = this.props;
+    const { car } = this.props;
     const { newStockLevel, errors, loading } = this.state;
     return (
       <li className="list-group-item" style={{ "margin": "5px" }} >
         <h3 style={{ "margin": "5px" }}>
           {`${car.year} ${car.make} ${car.model} `}
-          <Glyphicon className="pull-right clickable" glyph="remove"
-            onClick={onRemoveCarClick}
+          <Glyphicon className={"pull-right " + (loading ? "disabled" : "clickable")} glyph="remove"
+            disabled={loading}
+            onClick={event => this.onRemovingCarClick(event, car.id)}
           />
         </h3>
         <Row>
@@ -118,9 +151,7 @@ export class CustomListItem extends Component {
                   disabled={loading}
                 >Update</Button>
                 <ErrorsAlert errors={errors}></ErrorsAlert>
-    
             </Form>
-            {this.renderShowMoreImages(car.imageUrls)}
           </Col>
         </Row>
 
