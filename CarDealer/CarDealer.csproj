@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
+   
     <PackageReference Include="Microsoft.AspNetCore.App" Version="$(AspNetCoreAppRuntimeFrameworkVersion)">
       <IsImplicitlyDefined>true</IsImplicitlyDefined>
       <PrivateAssets>All</PrivateAssets>
@@ -60,8 +60,6 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="cd ClientApp &#xD;&#xA;npm install" />
-  </Target>
+ 
 
 </Project>

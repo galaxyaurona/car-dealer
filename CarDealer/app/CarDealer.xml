@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CarDealer</name>
+    </assembly>
+    <members>
+        <member name="M:CarDealer.Controllers.CarsController.SeedCars">
+            <summary>
+            Helper function to seed a sample car in repogitory
+            </summary>
+        </member>
+        <member name="M:CarDealer.Controllers.CarsController.GetCars">
+            <summary>
+             Get all cars in the car repository
+            </summary>
+            <remarks> 
+            Sample request
+            
+                    GET /Cars
+                    
+            </remarks>
+            
+            <returns>Entire list of cars in the car repository</returns>
+            <response code="200">
+                Return 200 if no exception occured
+            </response>
+        </member>
+        <member name="M:CarDealer.Controllers.CarsController.AddCar(CarDealer.Model.Car)">
+            <summary>
+             Add new car into the car repository
+            </summary>
+            <remarks> 
+            Sample request
+            
+                    POST /Cars
+                    
+            </remarks>
+            
+            <returns>Entire list of cars in the car repository</returns>
+            <response code="200">
+                Return new car if succesfully add car to car repository
+            </response>
+            <response code="422">
+                Return validation error messages if car fails model validation
+                (via ModelStateValidationFilter)
+            </response>
+        </member>
+        <member name="M:CarDealer.Controllers.CarsController.UpdateCar(System.Guid,CarDealer.Model.Car)">
+            <summary>
+             Partially update car, currenly support updating stock level
+            </summary>
+            <remarks> 
+            Sample request
+            
+                    PATCH /Cars/0793c770-8dfb-4436-b3e6-d7dbb0b08c4e
+                    
+            </remarks>
+            
+            <returns>Update car object</returns>
+            <response code="404">
+                return error message with single message when cannot
+              find car with this id in the repository
+               
+            </response>
+            <response code="422">
+                Return validation error messages if car fails model validation
+                (via ModelStateValidationFilter)
+            </response>
+            <response code="200">
+                Return updated car if succesfully update 
+            </response>
+        </member>
+        <member name="M:CarDealer.Controllers.CarsController.SearchForCarByMakeAndModel(System.String)">
+            <summary>
+             Search for car with make or model contain search term (case insensitive
+            </summary>
+            <remarks> 
+            Sample request
+            
+                    GET /Cars/search?searchTerm=a4
+                    
+            </remarks>
+            <param name="searchTerm">search term</param>
+            <returns>List of items whose make and model contains search term  </returns>
+            <response code="422">
+                When search term is null , empty or contains only white space    
+            </response>
+            <response code="200">
+                Return 200 if no exception occured
+            </response>
+        </member>
+        <member name="M:CarDealer.Controllers.CarsController.DeleteCar(System.Guid)">
+            <summary>
+            Delete a car with specific id
+            </summary>
+            <remarks> 
+            Sample request
+            
+                    DELETE /Cars/0793c770-8dfb-4436-b3e6-d7dbb0b08c4e
+                    
+            </remarks>
+            <param name="id">Id of the car to be deleted</param>
+            <returns>True if item is deleted</returns>
+            <response code="200">
+                Return 200 if item has been succesfully deleted
+            </response>
+        </member>
+    </members>
+</doc>
