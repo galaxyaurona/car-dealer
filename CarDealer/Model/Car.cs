@@ -8,7 +8,7 @@ namespace CarDealer.Model
 {
     public class Car
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         [Required(AllowEmptyStrings = false, ErrorMessage = "Car make can't be empty or contains whitespace only")]
         public string Make { get; set; }
         [Required(AllowEmptyStrings = false, ErrorMessage = "Car model can't be empty or contains whitespace only")]
@@ -18,7 +18,6 @@ namespace CarDealer.Model
         public int Year { get; set; }
         [Required(AllowEmptyStrings = false, ErrorMessage = "Car Body can't be empty or contains whitespace only")]
         public string Body { get; set; }
-
         public string Color { get; set; }
         [Required]
         [Range(0, Double.MaxValue, ErrorMessage = "Price must be >= 0")]

@@ -25,7 +25,7 @@ namespace CarDealer.Controllers
             {
                 var newCar = new Car()
                 {
-                    Id = 1,
+                    Id = Guid.NewGuid(),
                     Make = "Audi",
                     Model = "A4",
                     Year = 2018,
@@ -55,18 +55,22 @@ namespace CarDealer.Controllers
 
         public ActionResult AddCar([FromBody] Car newCar)
         {
-            
+            newCar.Id = Guid.NewGuid();
+            _carRepository.Add(newCar);
             return Ok(newCar);
         }
 
-        [HttpPut("{id:int}")]
-        public ActionResult UpdateCar([FromRoute] int id,
+        [HttpPut("{id:Guid}")]
+        public ActionResult UpdateCar([FromRoute] Guid id,
             [FromBody] Car updatingCarData)
         {
             var carIndex = _carRepository.FindIndex(x => x.Id == id);
             if (carIndex == -1)
             {
-                return NotFound("Cannot find car with this id");
+                var errors = new List<string>(){
+                    "Cannot find car with this id"
+                };
+                return NotFound(new {errors});
             }
             else
             {

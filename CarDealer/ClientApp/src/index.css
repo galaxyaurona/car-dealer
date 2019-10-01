@@ -24,8 +24,9 @@
 .add-form{
     border: 1px solid black;
     padding :5px;
+    margin: 15px 0px;
 }
 
 .add-form > .row {
-    margin:
+    margin: 5px;
 }
